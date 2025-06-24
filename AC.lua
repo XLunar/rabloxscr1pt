@@ -11,7 +11,7 @@ if getgenv then
     getgenv().FZ_AutoClutchActive = true
 end
 
-print("active22")
+print("active23")
 
 local UIS = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
