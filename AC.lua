@@ -11,10 +11,11 @@ if getgenv then
     getgenv().FZ_AutoClutchActive = true
 end
 
-print("active23")
+print("[AutoClutch] Activated")
 
 local UIS = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
+
 local holdingE = false
 local tappedThisRelease = false
 local inputBeganConn, inputEndedConn
@@ -28,19 +29,26 @@ inputBeganConn = UIS.InputBegan:Connect(function(input, processed)
 end)
 
 inputEndedConn = UIS.InputEnded:Connect(function(input, processed)
-    if input.KeyCode == Enum.KeyCode.E and holdingE and not tappedThisRelease then
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.E and holdingE then
         holdingE = false
-        tappedThisRelease = true
-        print("[AutoClutch] E released, tapping E 2 times!")
-        for i = 1, 2 do
-            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-            task.wait(0.03)
-            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
-            task.wait(0.03)
+        if not tappedThisRelease then
+            tappedThisRelease = true
+            print("[AutoClutch] E released, tapping E 2 times!")
+            task.spawn(function()
+                for i = 1, 2 do
+                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                    task.wait(0.03)
+                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                    task.wait(0.03)
+                end
+                tappedThisRelease = false
+            end)
         end
     end
 end)
 
+-- Unload function
 local function unload()
     print("[AutoClutch] Unloading and disconnecting all connections.")
     if inputBeganConn then pcall(function() inputBeganConn:Disconnect() end) inputBeganConn = nil end
